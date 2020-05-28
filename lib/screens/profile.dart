@@ -8,16 +8,30 @@ import 'dart:convert';
 import 'package:toast/toast.dart';
 import 'package:http/http.dart' as http;
 
+
+
+
+import 'package:async/async.dart';
+
+
+import 'package:path/path.dart';
+
 class Profile extends StatefulWidget {
- Profile({this.username});
+ Profile({this.username,this.emailAdd,this.accountType});
   final String username;
+  final String emailAdd;
+  final String accountType;
   
   @override
-  _ProfileState createState() => _ProfileState();
+  _ProfileState createState() => _ProfileState(username,emailAdd,accountType);
 }
 
 class _ProfileState extends State<Profile> {
-  
+  final String username;
+  final String emailAdd;
+  final String accountType;
+  _ProfileState(this.username,this.emailAdd,this.accountType);
+
   final TextEditingController _fullnameControl = TextEditingController();
   final TextEditingController _emailControl = TextEditingController();
   final TextEditingController _phoneControl = TextEditingController();
@@ -27,12 +41,11 @@ class _ProfileState extends State<Profile> {
   final TextEditingController _yearsxpControl = TextEditingController();
   final TextEditingController _fbpageControl = TextEditingController();
   
-  String _picked = 'supplier';
   
   File _image;
   String fullname, email, phone, address, bio, srate, yearsxp, fbpage;
   String name = '';
-  String emailAdd = '';
+
 
 
   Future getImage() async {
@@ -46,27 +59,27 @@ class _ProfileState extends State<Profile> {
   }
 
 
-  Future<String> getData() async {
-    http.Response response = await http.get(
-      Uri.encodeFull("http://192.168.1.9/eventory/REST_API/getdata.php"),
-      headers: {
-       "Accept": "application/json" 
-      }
-    );
+  // Future<String> getData() async {
+  //   http.Response response = await http.get(
+  //     Uri.encodeFull("http://192.168.1.9/eventory/REST_API/getdata.php"),
+  //     headers: {
+  //      "Accept": "application/json" 
+  //     }
+  //   );
 
-    print(response.body);
+  //   print(response.body);
 
-     List data = json.decode(response.body);
-    // print(data[0]["email"]);
-    // print(data[0]["password"]);
-    // print(data[0]["fullName"]);
-    // print(data[0]["accountType"]);
-    setState(() {
-        name = data[0]['supplierPhone'];
-        emailAdd = data[0]['supplierAddress'];
+  //    List data = json.decode(response.body);
+  //   // print(data[0]["email"]);
+  //   // print(data[0]["password"]);
+  //   // print(data[0]["fullName"]);
+  //   // print(data[0]["accountType"]);
+  //   setState(() {
+  //       name = data[0]['supplierPhone'];
+  //       emailAdd = data[0]['supplierAddress'];
      
-      });
-  }
+  //     });
+  // }
 
   void updateData() {
     var url = "http://192.168.1.9/eventory/REST_API/updateData.php";
@@ -81,12 +94,44 @@ class _ProfileState extends State<Profile> {
     });
   }
 
+Future upload(File imageFile) async{
+  var stream= new http.ByteStream(DelegatingStream.typed(imageFile.openRead()));
+  var length= await imageFile.length();
+  var uri = Uri.parse("http://192.168.1.9/eventory/REST_API/imgUpload.php");
+
+  var request = new http.MultipartRequest("POST", uri);
+
+  var multipartFile = new http.MultipartFile("image", stream, length, filename: basename(imageFile.path)); 
+  request.files.add(multipartFile); 
+
+  var response = await request.send();
+
+  if(response.statusCode==200){
+    print("Image Uploaded");
+  }else{
+    print("Upload Failed");
+  }
+  response.stream.transform(utf8.decoder).listen((value) {
+      print(value);
+    });
+    //  var url = "http://192.168.1.9/eventory/REST_API/updateData.php";
+
+    // http.post(url, body: {
+    //   "supplierPhone":_phoneControl.text,
+    //   "supplierAddress":  _addressControl.text,
+    //   "supplierBio": _bioControl .text, 
+    //   "supplierRate": _srateControl.text,
+    //   "supplierYears": _yearsxpControl.text,
+       
+    // });
+}
+
 
 //  var _categories = ["Caterer","DJ","Event Stylist","Host", "Makeup Artist","Entertainer","Photographer","Videographer"];
 
   @override
   Widget build(BuildContext context) {
-    if (_picked == 'supplier') {
+    if (accountType == '$accountType') {
       return Scaffold(
         body: Padding(
           padding: EdgeInsets.fromLTRB(10.0, 0, 10.0, 0),
@@ -119,7 +164,7 @@ class _ProfileState extends State<Profile> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
                             Text(
-                              "$name",
+                              "$username",
                               style: TextStyle(
                                 fontSize: 20.0,
                                 fontWeight: FontWeight.bold,
@@ -144,6 +189,7 @@ class _ProfileState extends State<Profile> {
                         InkWell(
                           onTap: () {
                             getImage();
+                            upload(_image);
                             // Navigator.of(context).push(
                             //   MaterialPageRoute(
                             //     builder: (BuildContext context){
@@ -184,6 +230,7 @@ class _ProfileState extends State<Profile> {
                       Text ('Update'),
                       color: Colors.blueAccent,
                       onPressed: () {
+                      upload(_image);
                       updateData();
                       Toast.show("Profile Updated", context,
                       duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
@@ -201,7 +248,7 @@ class _ProfileState extends State<Profile> {
                 },
                 decoration: InputDecoration(
                   icon: Icon(Icons.person),
-                  labelText: '$name',
+                  labelText: '$username',
                   labelStyle: TextStyle(
                     fontSize: 17,
                     fontWeight: FontWeight.w700,

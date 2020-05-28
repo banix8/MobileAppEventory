@@ -37,7 +37,7 @@ dependencies:
   table_calendar: ^2.2.3
   image_picker_modern: ^0.4.12+3
   toast: 
-  
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

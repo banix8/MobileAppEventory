@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-//import 'package:shared_preferences/shared_preferences.dart';
-//import 'package:Eventory/screens/home.dart'; //destination
 import 'package:toast/toast.dart';
 
 
 String username = '' ;
+String emailAdd  ='';
+String accountType  ='';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -33,7 +33,7 @@ class _LoginScreenState extends State<LoginScreen> {
   // } //added by Jhunes
 
  Future<List> _login() async {
-  final response = await http.post("http://192.168.1.9/eventory/REST_API/login.php", body: {
+  final response = await http.post("http://192.168.1.11/eventory/REST_API/login.php", body: {
     "email": email.text,
     "password": password.text,
   });
@@ -55,6 +55,14 @@ class _LoginScreenState extends State<LoginScreen> {
       Toast.show("Login Successfully as Supplier", context,
       duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
     }
+     setState(() {
+        username= datauser[0]['fullName'];
+        emailAdd = datauser[0]['email'];
+        accountType = datauser[0]['accountType'];
+      });
+
+    
+    
   }
   return datauser;
 }

@@ -9,7 +9,16 @@ import 'package:Eventory/screens/walkthrough.dart';
 
 
 
+
+
+
+
 class MainScreen extends StatefulWidget {
+ 
+  MainScreen({this.username,this.fullName});
+  final String username;
+  final String fullName;
+
   @override
   _MainScreenState createState() => _MainScreenState();
 }
@@ -60,6 +69,8 @@ class _MainScreenState extends State<MainScreen> {
             SearchScreen(),
             Profile(),
             SettingsScreen(),
+           
+            
          
           ],
         ),
