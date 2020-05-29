@@ -30,6 +30,24 @@
                     }
                     
                 break;
+
+
+                case "profile":
+                
+                 
+                $queryResult=$connect->query("SELECT *FROM tbl_useraccounts
+                LEFT JOIN tbl_supplier
+                ON tbl_useraccounts.accountID = tbl_supplier.accountID
+                where tbl_useraccounts.accountID = 18
+                ");
+                $result=array();
+
+                while($fetchData= $queryResult->fetch_assoc()){
+                    $result[] = $fetchData;
+                }
+                echo json_encode($result);
+                break;
+                
                 case "search":
                     
                     $queryResult=$connect->query("SELECT * from tbl_useraccounts");

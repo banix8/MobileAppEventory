@@ -6,22 +6,19 @@ import 'package:Eventory/screens/search.dart';
 import 'package:Eventory/screens/profile.dart';
 import 'package:Eventory/screens/settings.dart';
 import 'package:Eventory/screens/walkthrough.dart';
-
-
-
-
-
-
+//import 'package:toast/toast.dart';
+//import 'package:shared_preferences/shared_preferences.dart';
 
 class MainScreen extends StatefulWidget {
  
-  MainScreen({this.username,this.fullName});
-  final String username;
-  final String fullName;
-
-  @override
+ @override
   _MainScreenState createState() => _MainScreenState();
 }
+
+
+    
+
+  
 
 class _MainScreenState extends State<MainScreen> {
   PageController _pageController;

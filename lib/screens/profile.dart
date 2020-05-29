@@ -1,37 +1,21 @@
 import 'package:flutter/material.dart';
-//
 import 'package:image_picker_modern/image_picker_modern.dart';
-//import 'package:dropdown_formfield/dropdown_formfield.dart';
 import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
-import 'package:toast/toast.dart';
+
 import 'package:http/http.dart' as http;
-
-
-
-
 import 'package:async/async.dart';
-
-
 import 'package:path/path.dart';
 
 class Profile extends StatefulWidget {
- Profile({this.username,this.emailAdd,this.accountType});
-  final String username;
-  final String emailAdd;
-  final String accountType;
-  
   @override
-  _ProfileState createState() => _ProfileState(username,emailAdd,accountType);
+  
+  _ProfileState createState() => _ProfileState();
 }
 
 class _ProfileState extends State<Profile> {
-  final String username;
-  final String emailAdd;
-  final String accountType;
-  _ProfileState(this.username,this.emailAdd,this.accountType);
-
+  
   final TextEditingController _fullnameControl = TextEditingController();
   final TextEditingController _emailControl = TextEditingController();
   final TextEditingController _phoneControl = TextEditingController();
@@ -40,11 +24,22 @@ class _ProfileState extends State<Profile> {
   final TextEditingController _srateControl = TextEditingController();
   final TextEditingController _yearsxpControl = TextEditingController();
   final TextEditingController _fbpageControl = TextEditingController();
+
   
   
+   @override
+  void initState() {
+    //added by Jhunes
+    super.initState();
+    getData();
+  } //added by Jhunes
+
   File _image;
   String fullname, email, phone, address, bio, srate, yearsxp, fbpage;
+  
   String name = '';
+  String _email = '';
+  String _picked = '';
 
 
 
@@ -58,7 +53,25 @@ class _ProfileState extends State<Profile> {
     });
   }
 
+ Future<List> getData() async {
+    final response = await http.post("http://192.168.1.7/eventory/login.php", body: {
+      "event": "profile",
+    });
+     print(response.body);
+     
+     var datauser = json.decode(response.body); 
 
+    
+    setState(() {
+        name = datauser[0]['fullName'];
+        _email = datauser[0]['email'];
+        _picked = datauser[0]['accountType'];
+       
+      });
+     return json.decode(response.body);
+     
+  }
+  
   // Future<String> getData() async {
   //   http.Response response = await http.get(
   //     Uri.encodeFull("http://192.168.1.9/eventory/REST_API/getdata.php"),
@@ -131,7 +144,7 @@ Future upload(File imageFile) async{
 
   @override
   Widget build(BuildContext context) {
-    if (accountType == '$accountType') {
+    if (_picked == 'I am Supplier') {
       return Scaffold(
         body: Padding(
           padding: EdgeInsets.fromLTRB(10.0, 0, 10.0, 0),
@@ -164,7 +177,7 @@ Future upload(File imageFile) async{
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
                             Text(
-                              "$username",
+                              "$name",
                               style: TextStyle(
                                 fontSize: 20.0,
                                 fontWeight: FontWeight.bold,
@@ -231,9 +244,7 @@ Future upload(File imageFile) async{
                       color: Colors.blueAccent,
                       onPressed: () {
                       upload(_image);
-                      updateData();
-                      Toast.show("Profile Updated", context,
-                      duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+                     
                       //getData();
                       }
                       ),
@@ -248,7 +259,7 @@ Future upload(File imageFile) async{
                 },
                 decoration: InputDecoration(
                   icon: Icon(Icons.person),
-                  labelText: '$username',
+                  labelText: '$name',
                   labelStyle: TextStyle(
                     fontSize: 17,
                     fontWeight: FontWeight.w700,
@@ -266,7 +277,7 @@ Future upload(File imageFile) async{
                 },
                 decoration: InputDecoration(
                   icon: Icon(Icons.email),
-                  labelText: '$emailAdd',
+                  labelText: '$_email',
                   labelStyle: TextStyle(
                     fontSize: 17,
                     fontWeight: FontWeight.w700,
@@ -524,7 +535,7 @@ Future upload(File imageFile) async{
                 },
                 decoration: InputDecoration(
                   icon: Icon(Icons.person),
-                  labelText: 'Full Name',
+                  labelText: '$name',
                   labelStyle: TextStyle(
                     fontSize: 17,
                     fontWeight: FontWeight.w700,
@@ -541,7 +552,7 @@ Future upload(File imageFile) async{
                 },
                 decoration: InputDecoration(
                   icon: Icon(Icons.email),
-                  labelText: 'Email',
+                  labelText:'$_email',
                   labelStyle: TextStyle(
                     fontSize: 17,
                     fontWeight: FontWeight.w700,

@@ -26,8 +26,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     http.post(url, body: {
       "fullName":_fullnameControl.text,
       "email": _emailControl.text,
-      "password": _passwordControl.text, //aqui traemos el DropdownMenuItem lo llamamos _mySelection este es como el controller
-       "accountType": _picked
+      "password": _passwordControl.text,
     });
   }
 
